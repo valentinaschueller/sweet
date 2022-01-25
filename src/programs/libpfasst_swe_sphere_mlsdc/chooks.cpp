@@ -3,8 +3,6 @@
 #include "SphereDataCtx.hpp"
 #include "ceval.hpp"
 
-extern "C"
-{
     bool timestep_check_output(SphereDataCtx *i_ctx,
                                int i_current_iter,
                                int i_niters)
@@ -42,6 +40,8 @@ extern "C"
         return true;
     }
 
+extern "C"
+{
     void cecho_error(SphereData_Spectral* sd,
                      int step)
     {
@@ -93,11 +93,12 @@ extern "C"
                                        *simVars
                                        );
 
-        std::cout << std::setprecision(20)
-              << "mass = " << simVars->diag.total_mass
-              << " energy = " << simVars->diag.total_energy
-              << " potential_enstrophy = " << simVars->diag.total_potential_enstrophy
-              << std::endl;
+        std::cout << "[MULE] libpfasst.mass_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout <<  " = " << std::setprecision(20) << simVars->diag.total_mass << std::endl;
+        std::cout << "[MULE] libpfasst.energy_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout << " = " << std::setprecision(20) << simVars->diag.total_energy << std::endl;
+        std::cout << "[MULE] libpfasst.potential_enstrophy_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout << " = " << std::setprecision(20) << simVars->diag.total_potential_enstrophy << std::endl;
 
         // save the invariants for plotting at the end
         i_ctx->save_physical_invariants(i_current_step);
