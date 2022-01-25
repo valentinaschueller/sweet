@@ -53,11 +53,12 @@ extern "C"
                                        *simVars
                                        );
 
-        std::cout << std::setprecision(20)
-              << "mass = " << simVars->diag.total_mass
-              << " energy = " << simVars->diag.total_energy
-              << " potential_enstrophy = " << simVars->diag.total_potential_enstrophy
-              << std::endl;
+        std::cout << "[MULE] libpfasst.mass_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout <<  " = " << std::setprecision(20) << simVars->diag.total_mass << std::endl;
+        std::cout << "[MULE] libpfasst.energy_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout << " = " << std::setprecision(20) << simVars->diag.total_energy << std::endl;
+        std::cout << "[MULE] libpfasst.potential_enstrophy_s" << std::setfill('0') << std::setw(5) << i_current_step;
+        std::cout << " = " << std::setprecision(20) << simVars->diag.total_potential_enstrophy << std::endl;
 
         // save the invariants for plotting at the end
         i_ctx->save_physical_invariants(i_current_step);
