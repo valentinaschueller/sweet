@@ -422,31 +422,4 @@ void ccomp_f3 (
 	return;
 }
 
-// applies artificial diffusion to the system
-void cfinalize(
-		SphereDataVars *io_Y,
-		double i_t,
-		double i_dtq,
-		SphereDataCtx *i_ctx
-)
-{
-	// get the simulation variables
-	SimulationVariables* simVars = i_ctx->get_simulation_variables();
-
-	if (simVars->sim.viscosity == 0)
-		return;
-
-	SphereData_Spectral& phi_pert_Y  = io_Y->get_phi_pert();
-	SphereData_Spectral& vrt_Y = io_Y->get_vrt();
-	SphereData_Spectral& div_Y  = io_Y->get_div();
-
-	const double scalar = simVars->sim.viscosity*i_dtq;
-	const double r      = simVars->sim.sphere_radius;
-
-	phi_pert_Y  = phi_pert_Y.spectral_solve_helmholtz(1.0,  -scalar, r);
-	vrt_Y = vrt_Y.spectral_solve_helmholtz(1.0, -scalar, r);
-	div_Y  = div_Y.spectral_solve_helmholtz(1.0,  -scalar, r);
-}
-
-
 }
