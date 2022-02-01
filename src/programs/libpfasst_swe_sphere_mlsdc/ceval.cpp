@@ -338,6 +338,34 @@ void ceval_f3 (
 
 	// initialize F3 to zero in case no artificial viscosity
 	c_sweet_data_setval(o_F3, 0.0);
+
+	// get the simulation variables
+	SimulationVariables* simVars = i_ctx->get_simulation_variables();
+
+	// no need to do anything if no artificial viscosity
+	if (simVars->sim.viscosity == 0)
+	{
+		return;
+	}
+
+	// get the parameters used to apply diffusion
+	const double r    = simVars->sim.sphere_radius;
+	const double visc = simVars->sim.viscosity;
+
+	// lambda for applying viscosity
+	auto viscosity_applier = [&](int n, int m, std::complex<double> &io_data) 
+	    {
+		io_data *= (-visc*(double)n*((double)n+1.0))/(r*r);
+		};
+
+	phi_pert_F3 = phi_pert_Y;
+	phi_pert_F3.spectral_update_lambda(viscosity_applier);
+
+	vrt_F3 = vrt_Y;
+	vrt_F3.spectral_update_lambda(viscosity_applier);
+
+	div_F3 = div_Y;
+	div_F3.spectral_update_lambda(viscosity_applier);
 }
 
 // solves the second implicit system for io_Y
@@ -358,15 +386,38 @@ void ccomp_f3 (
 	SphereData_Spectral& vrt_Y = io_Y->get_vrt();
 	SphereData_Spectral& div_Y  = io_Y->get_div();
 
-	const SphereData_Spectral& phi_pert_Rhs  = i_Rhs->get_phi_pert();
-	const SphereData_Spectral& vrt_Rhs = i_Rhs->get_vrt();
-	const SphereData_Spectral& div_Rhs  = i_Rhs->get_div();
+	SphereData_Spectral& phi_pert_Rhs  = i_Rhs->get_phi_pert();
+	SphereData_Spectral& vrt_Rhs = i_Rhs->get_vrt();
+	SphereData_Spectral& div_Rhs  = i_Rhs->get_div();
 
 	phi_pert_Y = phi_pert_Rhs;
 	vrt_Y = vrt_Rhs;
 	div_Y = div_Rhs;
 
-	c_sweet_data_setval(o_F3, 0.0);
+	// get the simulation variables
+	SimulationVariables* simVars = i_ctx->get_simulation_variables();
+
+	// no need to do anything if no artificial viscosity
+	if (simVars->sim.viscosity == 0)
+		return;
+
+	// get the parameters used to apply diffusion
+	const double scalar = simVars->sim.viscosity*i_dtq;
+	const double r      = simVars->sim.sphere_radius;
+
+	// solve (1-dt*visc*diff_op)*rhs = y
+	phi_pert_Y  = phi_pert_Rhs.spectral_solve_helmholtz( 1.0, -scalar, r);
+	vrt_Y = vrt_Rhs.spectral_solve_helmholtz(1.0, -scalar, r);
+	div_Y  = div_Rhs.spectral_solve_helmholtz( 1.0, -scalar, r);
+
+	// now recompute F3 with the new value of Y
+	SphereData_Spectral& phi_F3  = o_F3->get_phi_pert();
+	SphereData_Spectral& vrt_F3 = o_F3->get_vrt();
+	SphereData_Spectral& div_F3  = o_F3->get_div();
+
+	phi_F3  = (phi_pert_Y  - phi_pert_Rhs)  / i_dtq;
+	vrt_F3 = (vrt_Y - vrt_Rhs) / i_dtq;
+	div_F3  = (div_Y  - div_Rhs)  / i_dtq;
 
 	return;
 }
