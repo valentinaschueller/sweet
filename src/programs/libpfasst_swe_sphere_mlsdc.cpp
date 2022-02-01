@@ -44,10 +44,6 @@ int main(int i_argc, char *i_argv[])
 {
 	MPI_Init(&i_argc, &i_argv);
 
-	std::cout << "+++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-	std::cout << "WARNING: This program is NOT ready for use!" << std::endl;
-	std::cout << "+++++++++++++++++++++++++++++++++++++++++++" << std::endl;
-
 	SimulationVariables simVars;
 	std::vector<LevelSingleton> levelSingletons;
 
