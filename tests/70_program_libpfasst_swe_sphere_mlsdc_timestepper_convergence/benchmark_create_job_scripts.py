@@ -62,8 +62,6 @@ jg.runtime.output_timestep_size = jg.runtime.max_simulation_time
 # LibPFASST runtime parameters
 # set them all explicitly to make sure we know what's happening
 jg.runtime.libpfasst_nlevels = 1
-jg.runtime.libpfasst_use_rexi = 0
-jg.runtime.libpfasst_implicit_coriolis_force = 0
 jg.runtime.libpfasst_use_rk_stepper = 0
 
 #################
@@ -92,12 +90,10 @@ jg.reference_job_unique_id = jg.job_unique_id
 
 # LibPFASST runtime parameters
 # set them all explicitly to make sure we know what's happening
-jg.runtime.libpfasst_nlevels = 1
+jg.runtime.libpfasst_nlevels = 2
 jg.runtime.libpfasst_nnodes = 5
 jg.runtime.libpfasst_nsweeps_coarse = 1
 jg.runtime.libpfasst_coarsening_multiplier = 0.5
-jg.runtime.libpfasst_use_rexi = 0
-jg.runtime.libpfasst_implicit_coriolis_force = 0
 jg.runtime.libpfasst_use_rk_stepper = 0
 
 
@@ -111,7 +107,7 @@ timestep_sizes = [timestep_size_min*(2.0**i) for i in range(0, 6)]
 # Create job scripts
 #
 
-for jg.runtime.libpfasst_nnodes in [3,5]:
+for jg.runtime.libpfasst_nnodes in [5]:
     for jg.runtime.libpfasst_niters in range(2,5):
         for jg.runtime.timestep_size in timestep_sizes:
 
