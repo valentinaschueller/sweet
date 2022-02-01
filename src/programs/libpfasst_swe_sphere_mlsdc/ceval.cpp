@@ -210,6 +210,8 @@ void ceval_f1(SphereDataVars *i_Y,
 	const SphereData_Spectral& vrt_Y = i_Y->get_vrt();
 	const SphereData_Spectral& div_Y  = i_Y->get_div();
 
+	int level = i_Y->get_level();
+
 	SphereData_Spectral& phi_pert_F1  = o_F1->get_phi_pert();
 	SphereData_Spectral& vrt_F1 = o_F1->get_vrt();
 	SphereData_Spectral& div_F1  = o_F1->get_div();
@@ -217,7 +219,7 @@ void ceval_f1(SphereDataVars *i_Y,
 	// get the time step parameters
 	SimulationVariables* simVars = i_ctx->get_simulation_variables();
 
-	SWE_Sphere_TS_lg_erk_lc_n_erk* timestepper = i_ctx->get_lg_erk_lc_n_erk_timestepper();
+	SWE_Sphere_TS_lg_erk_lc_n_erk* timestepper = i_ctx->get_lg_erk_lc_n_erk_timestepper(level);
 	// compute the explicit nonlinear right-hand side
 	timestepper->euler_timestep_update_lc_n(
 			phi_pert_Y,
@@ -242,6 +244,8 @@ void ceval_f2(SphereDataVars *i_Y,
 	const SphereData_Spectral& vrt_Y = i_Y->get_vrt();
 	const SphereData_Spectral& div_Y  = i_Y->get_div();
 
+	int level = i_Y->get_level();
+
 	SphereData_Spectral& phi_pert_F2  = o_F2->get_phi_pert();
 	SphereData_Spectral& vrt_F2 = o_F2->get_vrt();
 	SphereData_Spectral& div_F2  = o_F2->get_div();
@@ -249,7 +253,7 @@ void ceval_f2(SphereDataVars *i_Y,
 	// get the time step parameters
 	SimulationVariables* simVars = i_ctx->get_simulation_variables();
 
-	SWE_Sphere_TS_lg_erk_lc_n_erk* timestepper = i_ctx->get_lg_erk_lc_n_erk_timestepper();
+	SWE_Sphere_TS_lg_erk_lc_n_erk* timestepper = i_ctx->get_lg_erk_lc_n_erk_timestepper(level);
 	// compute the linear right-hand side
 	timestepper->euler_timestep_update_linear(
 			phi_pert_Y,
@@ -284,6 +288,8 @@ void ccomp_f2(
 	const SphereData_Spectral& vrt_Rhs = i_Rhs->get_vrt();
 	const SphereData_Spectral& div_Rhs  = i_Rhs->get_div();
 
+	int level = io_Y->get_level();
+
 	// first copy the rhs into the solution vector
 	// this is needed to call the SWEET function run_timestep
 	phi_pert_Y = phi_pert_Rhs;
@@ -298,7 +304,7 @@ void ccomp_f2(
 		return;
 	}
 
-	SWE_Sphere_TS_lg_irk* timestepper = i_ctx->get_lg_irk_timestepper();
+	SWE_Sphere_TS_lg_irk* timestepper = i_ctx->get_lg_irk_timestepper(level);
 	// solve the implicit system using the Helmholtz solver
 	timestepper->run_timestep(
 					phi_pert_Y,
