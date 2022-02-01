@@ -64,9 +64,6 @@ void cinitial(
 
 	// get the SimulationVariables object from context
 	SimulationVariables* simVars(i_ctx->get_simulation_variables());
-
-	if (simVars->benchmark.use_topography)
-		write_file(*i_ctx, simVars->benchmark.h_topo,  "prog_h_topo");
 	
 	BenchmarksSphereSWE *benchmarks = i_ctx->get_swe_benchmark(o_Y->get_level());
 
@@ -104,11 +101,13 @@ void cinitial(
 
 	if (rank == 0)
 	{
-		write_file(*i_ctx, phi_pert_Y,  "prog_phi_pert");
-		write_file(*i_ctx, vrt_Y, "prog_vrt");
-		write_file(*i_ctx, div_Y,  "prog_div");
+		if (simVars->iodata.output_each_sim_seconds >= 0) {
+			write_file(*i_ctx, phi_pert_Y, "prog_phi_pert");
+			write_file(*i_ctx, vrt_Y, "prog_vrt");
+			write_file(*i_ctx, div_Y, "prog_div");
+		}
 		if (simVars->iodata.output_each_sim_seconds < 0) {
-		    // only write output at start and end
+		    // do not write output
 		    simVars->iodata.output_next_sim_seconds = simVars->timecontrol.max_simulation_time;
 		}
 		else if (simVars->iodata.output_each_sim_seconds > 0) {
@@ -171,9 +170,14 @@ void cfinal(
 	SphereData_Spectral vrt_Y_final(vrt_Y);
 	vrt_Y_init -= vrt_Y_final;
 
+	if (simVars->iodata.output_each_sim_seconds < 0) {
+		// do not write output
+		return;
+	}
+
 	if (level_id == simVars->libpfasst.nlevels-1) 
 	{
-		if (nprocs == 1)
+		if (rank == 0)
 		{
 			std::string filename = "prog_phi_pert";
 			write_file(*i_ctx, phi_pert_Y, filename.c_str());
@@ -184,17 +188,6 @@ void cfinal(
 			filename = "prog_div";
 			write_file(*i_ctx, div_Y, filename.c_str());
 
-		}
-		else if (rank == 0)
-		{
-			std::string filename = "prog_phi_pert_nprocs_"+std::to_string(nprocs);
-			write_file(*i_ctx, phi_pert_Y, filename.c_str());
-
-			filename = "prog_vrt_nprocs_"+std::to_string(nprocs);
-			write_file(*i_ctx, vrt_Y, filename.c_str());
-
-			filename = "prog_div_nprocs_"+std::to_string(nprocs);
-			write_file(*i_ctx, div_Y, filename.c_str());
 		}
 	}
 }
