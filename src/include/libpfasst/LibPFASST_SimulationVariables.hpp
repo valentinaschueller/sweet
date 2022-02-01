@@ -38,15 +38,6 @@ struct LibPFASST_SimulationVariables
      */
     double coarsening_multiplier = 0.5;
 
-    /**
-     * Use rexi as a linear solve in f2comp
-     */
-    bool use_exp = false;
-
-    /**
-     * Treat the Coriolis force implicitly
-     */
-    bool implicit_coriolis_force = false;
 
     /**
      * Use the RK stepper instead of the spectral deferred correction sweeps
@@ -63,8 +54,6 @@ struct LibPFASST_SimulationVariables
         std::cout << " + nnodes: "                  << nnodes                  << std::endl;
         std::cout << " + nodes_type: "              << nodes_type              << std::endl;
         std::cout << " + coarsening_multiplier: "   << coarsening_multiplier   << std::endl;
-        std::cout << " + use_rexi: "                << use_exp                << std::endl;
-        std::cout << " + implicit_coriolis_force: " << implicit_coriolis_force << std::endl;
         std::cout << " + use_rk_stepper: "          << use_rk_stepper          << std::endl;
         std::cout                                                              << std::endl;
     }
@@ -79,8 +68,6 @@ struct LibPFASST_SimulationVariables
         std::cout << "	--libpfasst-nnodes [int]			LibPFASST parameter nnodes, default: 5"                          << std::endl;
         std::cout << "	--libpfasst-nodes-type [string]			LibPFASST parameter nodes-type, default: SDC_GAUSS_LOBATTO"      << std::endl;
         std::cout << "	--libpfasst-coarsening-multiplier [float]	LibPFASST parameter coarsening-multiplier, default: 0.5"         << std::endl;
-        std::cout << "	--libpfasst-use-rexi [bool]	                LibPFASST parameter use-rexi, default: false"                    << std::endl;
-        std::cout << "	--libpfasst-implicit-coriolis-force [bool]      LibPFASST parameter implicit-coriolis-force, default: false"      << std::endl;
         std::cout << "      --libpfasst-use-rk-stepper [bool]               LibPFASST parameter use the Runge-Kutta stepper, default: false" << std::endl;
         std::cout << ""                                                                                                                      << std::endl;
     }
@@ -109,12 +96,6 @@ struct LibPFASST_SimulationVariables
         io_long_options[io_next_free_program_option] = {"libpfasst-coarsening-multiplier", required_argument, 0, 256+io_next_free_program_option};
         io_next_free_program_option++;
 
-        io_long_options[io_next_free_program_option] = {"libpfasst-use-rexi", required_argument, 0, 256+io_next_free_program_option};
-        io_next_free_program_option++;
-
-        io_long_options[io_next_free_program_option] = {"libpfasst-implicit-coriolis-force", required_argument, 0, 256+io_next_free_program_option};
-        io_next_free_program_option++;
-
         io_long_options[io_next_free_program_option] = {"libpfasst-use-rk-stepper", required_argument, 0, 256+io_next_free_program_option};
         io_next_free_program_option++;
 
@@ -138,12 +119,10 @@ struct LibPFASST_SimulationVariables
             case 3:	nnodes                  = atoi(optarg);	return -1;
             case 4:	nodes_type              = optarg; 	    return -1;
             case 5:	coarsening_multiplier   = atof(optarg);	return -1;
-            case 6: use_exp                 = atoi(optarg); return -1;
-            case 7: implicit_coriolis_force = atoi(optarg); return -1;
-            case 8: use_rk_stepper          = atoi(optarg); return -1;
+            case 6: use_rk_stepper          = atoi(optarg); return -1;
         }
 
-        return 9;
+        return 7;
     }
 
 
