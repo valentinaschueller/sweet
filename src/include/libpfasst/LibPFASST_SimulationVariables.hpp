@@ -6,6 +6,7 @@
 #include <string>
 #include <iterator>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 
 struct LibPFASST_SimulationVariables
@@ -58,13 +59,58 @@ struct LibPFASST_SimulationVariables
     std::vector<double> hyperviscosity_4;
     std::vector<double> hyperviscosity_6;
     std::vector<double> hyperviscosity_8;
+    std::unordered_map<std::string, bool> hyperviscosity_on_field = 
+        std::unordered_map<std::string, bool>({{"phi_pert", true},
+                                               {"div", true},
+                                               {"vrt", true}});
 
 private:
     std::string _print_hyperviscosities(const std::vector<double> & hv_vector)
     {
         std::stringstream result;
-        std::copy(hv_vector.begin(), hv_vector.end(), std::ostream_iterator<double>(result, "\t "));
+        std::copy(hv_vector.begin(), hv_vector.end(), std::ostream_iterator<double>(result, "\t"));
         return result.str();
+    }
+
+    std::string _print_hyperviscosity_fields()
+    {
+        std::string hv_fields{};
+        for (const auto & it : hyperviscosity_on_field)
+        {
+            if (!it.second) continue;
+            hv_fields += it.first + "  ";
+        }
+        return hv_fields;
+    }
+
+    void _set_hyperviscosity_fields(const std::string & hv_fields)
+    {
+        if (hv_fields == "all")
+        {
+            return;
+        }
+        for (auto & it : hyperviscosity_on_field)
+        {
+            it.second = false;
+        }
+        if (hv_fields == "none")
+        {
+            return;
+        }
+        std::vector<std::string> substrings = StringSplit::split(hv_fields, ",");
+        // first, set all entries to false
+        // now, set entries true that are contained in the partial strings.
+        for (const auto & substring : substrings)
+        {
+            if (hyperviscosity_on_field.find(substring) == hyperviscosity_on_field.end())
+            {
+                std::cout << "!!! WARNING !!!" << std::endl;
+                std::cout << "!!! WARNING: Field '" << substring << "' not known for hyperviscosity !!!" << std::endl;
+                std::cout << "!!! WARNING !!!" << std::endl;
+                continue;
+            }
+            hyperviscosity_on_field.at(substring) = true;
+        }
     }
         
 public:
@@ -83,6 +129,7 @@ public:
         std::cout << " + hyperviscosity order 4 [from coarse to fine]:  " << _print_hyperviscosities(hyperviscosity_4) << std::endl; 
         std::cout << " + hyperviscosity order 6 [from coarse to fine]:  " << _print_hyperviscosities(hyperviscosity_6) << std::endl; 
         std::cout << " + hyperviscosity order 8 [from coarse to fine]:  " << _print_hyperviscosities(hyperviscosity_8) << std::endl;
+        std::cout << " + apply hyperviscosity on field(s):              " << _print_hyperviscosity_fields() << std::endl;
         std::cout << std::endl;
     }
 
@@ -97,10 +144,11 @@ public:
         std::cout << "	--libpfasst-nodes-type [string]		        LibPFASST parameter nodes-type, default: SDC_GAUSS_LOBATTO"      << std::endl;
         std::cout << "	--libpfasst-coarsening-multiplier [float]       LibPFASST parameter coarsening-multiplier, default: 0.5"         << std::endl;
         std::cout << "        --libpfasst-use-rk-stepper [bool]               LibPFASST parameter use the Runge-Kutta stepper, default: false" << std::endl;
-        std::cout << "        --libpfasst-u2 [float]                          Hyperviscosity of order 2, default: 0"                           << std::endl;
-        std::cout << "        --libpfasst-u4 [float]                          Hyperviscosity of order 4, default: 0"                           << std::endl;
-        std::cout << "        --libpfasst-u6 [float]                          Hyperviscosity of order 6, default: 0"                           << std::endl;
-        std::cout << "        --libpfasst-u8 [float]                          Hyperviscosity of order 8, default: 0"                           << std::endl;
+        std::cout << "        --libpfasst-u2 [floats]                         Hyperviscosity of order 2, default: 0 on all levels"             << std::endl;
+        std::cout << "        --libpfasst-u4 [floats]                         Hyperviscosity of order 4, default: 0 on all levels"             << std::endl;
+        std::cout << "        --libpfasst-u6 [floats]                         Hyperviscosity of order 6, default: 0 on all levels"             << std::endl;
+        std::cout << "        --libpfasst-u8 [floats]                         Hyperviscosity of order 8, default: 0 on all levels"             << std::endl;
+        std::cout << "        --libpfasst-u-fields [string]                   Set fields for hyperviscosity, default: all"                     << std::endl;
         std::cout << std::endl;
     }
 
@@ -143,6 +191,8 @@ public:
         io_long_options[io_next_free_program_option] = {"libpfasst-u8", required_argument, 0, 256+io_next_free_program_option};
         io_next_free_program_option++;
 
+        io_long_options[io_next_free_program_option] = {"libpfasst-u-fields", required_argument, 0, 256+io_next_free_program_option};
+        io_next_free_program_option++;
     }
 
 
@@ -197,8 +247,9 @@ public:
             case 8:  hyperviscosity_4_str    = optarg; return -1;
             case 9:  hyperviscosity_6_str    = optarg; return -1;
             case 10: hyperviscosity_8_str    = optarg; return -1;
+            case 11: _set_hyperviscosity_fields(optarg); return -1;
         }
-        return 11;
+        return 12;
     }
 
 
