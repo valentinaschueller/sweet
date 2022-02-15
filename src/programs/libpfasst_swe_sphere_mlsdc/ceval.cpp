@@ -373,19 +373,16 @@ void ceval_f3 (
 	// TODO only do this for the fields that should get viscosity applied
 	if (simVars->libpfasst.hyperviscosity_on_field.at("phi_pert"))
 	{
-		std::cout << "applying viscosity to phi_pert" << std::endl;
 		phi_pert_F3 = phi_pert_Y;
 		phi_pert_F3.spectral_update_lambda(viscosity_applier);
 	}
 	if (simVars->libpfasst.hyperviscosity_on_field.at("vrt"))
 	{
-		std::cout << "applying viscosity to vrt" << std::endl;
 		vrt_F3 = vrt_Y;
 		vrt_F3.spectral_update_lambda(viscosity_applier);
 	}
 	if (simVars->libpfasst.hyperviscosity_on_field.at("div"))
 	{
-		std::cout << "applying viscosity to div" << std::endl;
 		div_F3 = div_Y;
 		div_F3.spectral_update_lambda(viscosity_applier);
 	}	
@@ -442,21 +439,18 @@ void ccomp_f3 (
 	// 2. recompute F3 with the new value of Y
 	if (simVars->libpfasst.hyperviscosity_on_field.at("phi_pert"))
 	{
-		std::cout << "applying viscosity to phi_pert" << std::endl;
 		phi_pert_Y  = phi_pert_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
 		SphereData_Spectral& phi_pert_F3 = o_F3->get_phi_pert();
 		phi_pert_F3 = (phi_pert_Y - phi_pert_Rhs) / i_dtq;
 	}
 	if (simVars->libpfasst.hyperviscosity_on_field.at("vrt"))
 	{
-		std::cout << "applying viscosity to vrt" << std::endl;
 		vrt_Y = vrt_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
 		SphereData_Spectral& vrt_F3 = o_F3->get_vrt();
 		vrt_F3 = (vrt_Y - vrt_Rhs) / i_dtq;
 	}
 	if (simVars->libpfasst.hyperviscosity_on_field.at("div"))
 	{
-		std::cout << "applying viscosity to div" << std::endl;
 		div_Y  = div_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
 		SphereData_Spectral& div_F3 = o_F3->get_div();
 		div_F3 = (div_Y - div_Rhs) / i_dtq;
