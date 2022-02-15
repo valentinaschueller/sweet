@@ -66,6 +66,14 @@ int main(int i_argc, char *i_argv[])
 		return -1;
 	}
 
+	if (simVars.sim.viscosity)
+	{
+		std::cout << "!!! WARNING !!!" << std::endl;
+		std::cout << "!!! WARNING: To apply viscosity, use the --libpfasst-u2/4/6/8 flags !!!" << std::endl;
+		std::cout << "!!! WARNING !!!" << std::endl;
+	}
+	simVars.libpfasst.postprocess_hyperviscosity();
+
 	// define the number of levels and SDC nodes for each level
 	// note: level #nlevels-1 is the finest, level #0 is the coarsest
 
