@@ -66,11 +66,9 @@ int main(int i_argc, char *i_argv[])
 		return -1;
 	}
 
-	if (simVars.sim.viscosity)
+	if ((simVars.sim.viscosity > 0) || (simVars.sim.viscosity_order != 2))
 	{
-		std::cout << "!!! WARNING !!!" << std::endl;
-		std::cout << "!!! WARNING: To apply viscosity, use the --libpfasst-u2/4/6/8 flags !!!" << std::endl;
-		std::cout << "!!! WARNING !!!" << std::endl;
+		SWEETError("To apply viscosity, use the --libpfasst-u2/4/6/8 flags, not -u or -U!");
 	}
 	simVars.libpfasst.postprocess_hyperviscosity();
 
