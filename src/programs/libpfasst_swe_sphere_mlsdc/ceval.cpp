@@ -408,6 +408,9 @@ void ccomp_f3 (
 	vrt_Y = vrt_Rhs;
 	div_Y = div_Rhs;
 
+	// initialize F3 to zero in case no artificial viscosity
+	c_sweet_data_setval(o_F3, 0.0);
+
 	// get the simulation variables
 	SimulationVariables* simVars = i_ctx->get_simulation_variables();
 
