@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <math.h>
 #include <string>
+#include <utility>
 
 #include <sweet/SimulationVariables.hpp>
 #include "../swe_sphere_timeintegrators/SWE_Sphere_TS_l_irk.hpp"
@@ -342,21 +343,34 @@ void ceval_f3 (
 	// get the simulation variables
 	SimulationVariables* simVars = i_ctx->get_simulation_variables();
 
+	// get the parameters used to apply diffusion
+	const double visc2 = simVars->libpfasst.hyperviscosity_2[i_level];
+	const double visc4 = simVars->libpfasst.hyperviscosity_4[i_level];
+	const double visc6 = simVars->libpfasst.hyperviscosity_6[i_level];
+	const double visc8 = simVars->libpfasst.hyperviscosity_8[i_level];
 	// no need to do anything if no artificial viscosity
-	if (simVars->sim.viscosity == 0)
+	if (!(visc2 || visc4 || visc6 || visc8))
 	{
 		return;
 	}
-
-	// get the parameters used to apply diffusion
 	const double r    = simVars->sim.sphere_radius;
-	const double visc = simVars->sim.viscosity;
 
 	// lambda for applying viscosity
 	auto viscosity_applier = [&](int n, int m, std::complex<double> &io_data) 
 	    {
-		io_data *= (-visc*(double)n*((double)n+1.0))/(r*r);
+			double laplace_op_2 = (double)n*((double)n+1.0)/(r*r);
+			double laplace_op_4 = laplace_op_2 * laplace_op_2;
+			double laplace_op_6 = laplace_op_4 * laplace_op_2;
+			double laplace_op_8 = laplace_op_4 * laplace_op_4;
+
+			io_data *= (
+				(-visc2) * laplace_op_2 + 
+				(-visc4) * laplace_op_4 +
+			    (-visc6) * laplace_op_6 +
+				(-visc8) * laplace_op_8);
 		};
+	
+	// TODO only do this for the fields that should get viscosity applied
 
 	phi_pert_F3 = phi_pert_Y;
 	phi_pert_F3.spectral_update_lambda(viscosity_applier);
@@ -397,27 +411,34 @@ void ccomp_f3 (
 	// get the simulation variables
 	SimulationVariables* simVars = i_ctx->get_simulation_variables();
 
-	// no need to do anything if no artificial viscosity
-	if (simVars->sim.viscosity == 0)
-		return;
-
 	// get the parameters used to apply diffusion
-	const double scalar = simVars->sim.viscosity*i_dtq;
+	const double visc2  = simVars->libpfasst.hyperviscosity_2[i_level] * i_dtq;
+	const double visc4  = simVars->libpfasst.hyperviscosity_4[i_level] * i_dtq;
+	const double visc6  = simVars->libpfasst.hyperviscosity_6[i_level] * i_dtq;
+	const double visc8  = simVars->libpfasst.hyperviscosity_8[i_level] * i_dtq;
+	// no need to do anything if no artificial viscosity
+	if (!(visc2 || visc4 || visc6 || visc8))
+	{
+		return;
+	}
 	const double r      = simVars->sim.sphere_radius;
 
+	const std::array<double, 4> visc_factors {-visc2, -visc4, -visc6, -visc8};
+
 	// solve (1-dt*visc*diff_op)*rhs = y
-	phi_pert_Y  = phi_pert_Rhs.spectral_solve_helmholtz( 1.0, -scalar, r);
-	vrt_Y = vrt_Rhs.spectral_solve_helmholtz(1.0, -scalar, r);
-	div_Y  = div_Rhs.spectral_solve_helmholtz( 1.0, -scalar, r);
+	// TODO only do this for the fields that should get viscosity applied
+	phi_pert_Y  = phi_pert_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
+	vrt_Y = vrt_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
+	div_Y  = div_Rhs.spectral_solve_helmholtz_higher_order(1.0, visc_factors, r);
 
 	// now recompute F3 with the new value of Y
-	SphereData_Spectral& phi_F3  = o_F3->get_phi_pert();
+	SphereData_Spectral& phi_pert_F3 = o_F3->get_phi_pert();
 	SphereData_Spectral& vrt_F3 = o_F3->get_vrt();
-	SphereData_Spectral& div_F3  = o_F3->get_div();
+	SphereData_Spectral& div_F3 = o_F3->get_div();
 
-	phi_F3  = (phi_pert_Y  - phi_pert_Rhs)  / i_dtq;
-	vrt_F3 = (vrt_Y - vrt_Rhs) / i_dtq;
-	div_F3  = (div_Y  - div_Rhs)  / i_dtq;
+	phi_pert_F3  = (phi_pert_Y - phi_pert_Rhs) / i_dtq;
+	vrt_F3       = (vrt_Y - vrt_Rhs) / i_dtq;
+	div_F3       = (div_Y - div_Rhs) / i_dtq;
 
 	return;
 }
