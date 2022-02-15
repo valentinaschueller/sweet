@@ -104,10 +104,7 @@ private:
         {
             if (hyperviscosity_on_field.find(substring) == hyperviscosity_on_field.end())
             {
-                std::cout << "!!! WARNING !!!" << std::endl;
-                std::cout << "!!! WARNING: Field '" << substring << "' not known for hyperviscosity !!!" << std::endl;
-                std::cout << "!!! WARNING !!!" << std::endl;
-                continue;
+                SWEETError("'" + substring + "' not a known field for hyperviscosity!");
             }
             hyperviscosity_on_field.at(substring) = true;
         }
@@ -206,21 +203,22 @@ public:
         hyperviscosity_4 = std::vector<double>(nlevels, 0);
         hyperviscosity_6 = std::vector<double>(nlevels, 0);
         hyperviscosity_8 = std::vector<double>(nlevels, 0);
+        const std::string delimiter = ",";
         if (hyperviscosity_2_str != "")
         {
-            StringSplit::split_n_doubles(hyperviscosity_2_str, hyperviscosity_2);
+            StringSplit::split_n_doubles(hyperviscosity_2_str, hyperviscosity_2, delimiter);
         }
         if (hyperviscosity_4_str != "")
         {
-            StringSplit::split_n_doubles(hyperviscosity_4_str, hyperviscosity_4);
+            StringSplit::split_n_doubles(hyperviscosity_4_str, hyperviscosity_4, delimiter);
         }
         if (hyperviscosity_6_str != "")
         {
-            StringSplit::split_n_doubles(hyperviscosity_6_str, hyperviscosity_6);
+            StringSplit::split_n_doubles(hyperviscosity_6_str, hyperviscosity_6, delimiter);
         }
         if (hyperviscosity_8_str != "")
         {
-            StringSplit::split_n_doubles(hyperviscosity_8_str, hyperviscosity_8);
+            StringSplit::split_n_doubles(hyperviscosity_8_str, hyperviscosity_8, delimiter);
         }
     }
 
