@@ -61,13 +61,13 @@ jg.runtime.output_timestep_size = jg.runtime.max_simulation_time
 
 # LibPFASST runtime parameters
 # set them all explicitly to make sure we know what's happening
-jg.runtime.libpfasst_nlevels = 1
 jg.runtime.libpfasst_use_rk_stepper = 0
 
 #################
 # Reference Job #
 #################
 
+jg.runtime.libpfasst_nlevels = 1
 jg.runtime.libpfasst_nnodes = 5
 jg.runtime.libpfasst_niters = 8
 jg.runtime.libpfasst_nodes_type = 'SDC_GAUSS_LOBATTO'
