@@ -173,8 +173,10 @@ int main(int i_argc, char *i_argv[])
 		levelSingletons[thisLevelId].level = thisLevelId;
 
         // compute "additional" modes (negative because we're coarsening)
-		auto additional_modes_lat = 1 - std::ceil(simVars.disc.space_res_spectral[0]*pow(simVars.libpfasst.coarsening_multiplier,i));
-        auto additional_modes_lon = 1 - std::ceil(simVars.disc.space_res_spectral[1]*pow(simVars.libpfasst.coarsening_multiplier,i));
+		// use 1 - alpha to compute what to take away (we want to have alpha^i * res modes on level n-1-i)
+		double coarsener = 1 - simVars.libpfasst.coarsening_multiplier;
+		int additional_modes_lat = 1 - std::ceil(simVars.disc.space_res_spectral[0]*pow(coarsener,i));
+        int additional_modes_lon = 1 - std::ceil(simVars.disc.space_res_spectral[1]*pow(coarsener,i));
         // setup data configuration at this level
 		levelSingletons[thisLevelId].dataConfig.setupAdditionalModes(
 				&(levelSingletons[thisLevelId + 1].dataConfig),
