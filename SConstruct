@@ -97,8 +97,8 @@ p.makeOptionsConsistent()
 if p.libxml == 'enable':
     env.ParseConfig("xml2-config --cflags --libs")
 
-if p.parareal == 'mpi':
-    raise Exception("TODO: Implement MPI Parareal")
+####if p.parareal == 'mpi':
+####    raise Exception("TODO: Implement MPI Parareal")
 
 p.ld_flags = GetOption('ld_flags')
 
@@ -152,6 +152,16 @@ else:
     raise Exception("Invalid option '"+str(p.parareal)+"' for parareal method")
 
 
+if p.parareal_scalar == 'enable':
+    env.Append(CXXFLAGS = ' -DSWEET_PARAREAL_SCALAR=1')
+if p.parareal_plane == 'enable':
+    env.Append(CXXFLAGS = ' -DSWEET_PARAREAL_PLANE=1')
+if p.parareal_sphere == 'enable':
+    env.Append(CXXFLAGS = ' -DSWEET_PARAREAL_SPHERE=1')
+if p.parareal_plane_swe == 'enable':
+    env.Append(CXXFLAGS = ' -DSWEET_PARAREAL_PLANE_SWE=1')
+if p.parareal_plane_burgers == 'enable':
+    env.Append(CXXFLAGS = ' -DSWEET_PARAREAL_PLANE_BURGERS=1')
 
 
 #
@@ -440,18 +450,8 @@ if compiler_to_use == 'llvm':
         env.Append(LIBS=['gfortran'])
 
 
-#
-# Intensive sanitization
-#
-if 0:
-    # Use address sanitizer checks (e.g. for memory allocation, out of boundary access, etc.)
-    #env.Append(CXXFLAGS=' -fsanitize=address')
-    #env.Append(LINKFLAGS=' -fsanitize=address')
-    pass
 
-
-
-if p.mode == 'debug':
+if p.mode in ['debug', 'debug_thread', 'debug_leak']:
     env.Append(CXXFLAGS=' -DSWEET_DEBUG=1')
 
     if compiler_to_use == 'gnu':
@@ -487,6 +487,12 @@ elif p.mode == 'release':
     if compiler_to_use == 'gnu':
         env.Append(CXXFLAGS=' -O3 -mtune=native')
 
+        # Ensure vectorization
+        env.Append(CXXFLAGS=' -ftree-vectorize')
+
+        # Let the compiler know about no aliasing of function arguments
+        env.Append(CXXFLAGS=' -fstrict-aliasing')
+
     elif compiler_to_use == 'llvm':
         env.Append(CXXFLAGS=' -O3 -mtune=native')
 
@@ -504,6 +510,9 @@ elif p.mode == 'release':
             env.Append(F90FLAGS=' -O2')
         elif compiler_to_use == 'intel':
             env.Append(F90FLAGS=' -O2')
+
+if p.sanitize != '':
+    env.Append(CXXFLAGS=' -fsanitize='+p.sanitize)
 
 
 if p.quadmath == 'enable':
