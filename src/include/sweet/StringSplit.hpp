@@ -60,9 +60,6 @@ public:
 	)
 	{
 		std::vector<std::string> substrings = split(i_str, i_delimiter);
-		size_t number_of_substrings = substrings.size();
-		size_t number_of_doubles = o_doubles.size();
-		double last_value{};
 
 		if ((substrings.size() != 1) && (substrings.size() != o_doubles.size()))
 		{
