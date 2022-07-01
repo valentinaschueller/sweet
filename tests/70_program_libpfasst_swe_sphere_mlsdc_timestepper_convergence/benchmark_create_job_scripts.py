@@ -68,6 +68,7 @@ jg.runtime.libpfasst_use_rk_stepper = 0
 #################
 
 jg.runtime.libpfasst_nlevels = 1
+jg.runtime.libpfasst_nsweeps = 1
 jg.runtime.libpfasst_nnodes = 5
 jg.runtime.libpfasst_niters = 8
 jg.runtime.libpfasst_nodes_type = 'SDC_GAUSS_LOBATTO'
