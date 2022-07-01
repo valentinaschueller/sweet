@@ -15,7 +15,7 @@ struct LibPFASST_SimulationVariables
     /**
      * Number of space-time levels in the PFASST algorithms
      */
-    int nlevels = 2;
+    int nlevels = 1;
 
     /**
      * Number of (ML)SDC iterations
