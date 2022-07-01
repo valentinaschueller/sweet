@@ -153,7 +153,8 @@ int main(int i_argc, char *i_argv[])
 	levelSingletons[fineLevelId].dataConfigNoDealiasing.setupAuto(
 			res_physical_nodealiasing,
 			simVars.disc.space_res_spectral,
-			simVars.misc.reuse_spectral_transformation_plans
+			simVars.misc.reuse_spectral_transformation_plans,
+			simVars.misc.verbosity
 	);
 
 	// setup data operators in fine level
