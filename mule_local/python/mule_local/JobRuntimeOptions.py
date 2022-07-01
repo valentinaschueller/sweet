@@ -383,7 +383,7 @@ class JobRuntimeOptions(InfoError):
             if self.libpfasst_nnodes != None:
                 idstr += '_pf_nnod'+str(self.libpfasst_nnodes)
             if self.libpfasst_nsweeps != None:
-                idstr += '_pf_nswpc'+str(self.libpfasst_nsweeps)
+                idstr += '_pf_nswps'+str(self.libpfasst_nsweeps)
             if self.libpfasst_nodes_type != None:
                 idstr += '_'+str(self.libpfasst_nodes_type)
             if self.libpfasst_coarsening_multiplier != None:
