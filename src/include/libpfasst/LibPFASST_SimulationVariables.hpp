@@ -230,7 +230,7 @@ public:
      */
     void postprocess_nsweeps()
     {
-        nsweeps = std::vector<int>(nlevels, 0);
+        nsweeps = std::vector<int>(nlevels, 1);
         const std::string delimiter = ",";
         if (nsweeps_str != "")
         {
