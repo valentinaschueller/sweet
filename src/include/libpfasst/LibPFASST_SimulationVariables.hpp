@@ -136,7 +136,7 @@ public:
     {
         std::cout << ""                                                                                                                        << std::endl;
         std::cout << "LibPFASST:"                                                                                                              << std::endl;
-        std::cout << "\t--libpfasst-nlevels [int]                       LibPFASST parameter nlevels, default: 2"                               << std::endl;
+        std::cout << "\t--libpfasst-nlevels [int]                       LibPFASST parameter nlevels, default: 1"                               << std::endl;
         std::cout << "\t--libpfasst-niters [int]                        LibPFASST parameter niters, default: 8"                                << std::endl;
         std::cout << "\t--libpfasst-nsweeps [ints]                      LibPFASST parameter nsweeps, default: 1 on all levels"                 << std::endl;
         std::cout << "\t--libpfasst-nnodes [int]                        LibPFASST parameter nnodes, default: 5"                                << std::endl;
