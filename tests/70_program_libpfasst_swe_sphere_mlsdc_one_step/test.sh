@@ -13,11 +13,11 @@ if [ -e "$MULE_LOCAL_ROOT/../local_software/local/lib/libpfasst.a" ]; then
 	echo "$SCONS"
 	$SCONS || exit
 
-    NSWEEPS_COARSE_1="./build/libpfasst_swe_sphere_mlsdc_*_debug -M 64 -t 360 --benchmark-name=gaussian_bump --dt=180 --libpfasst-nlevels 2 --libpfasst-niters 1 --libpfasst-nnodes 3 --output-file-mode=bin --libpfasst-nsweeps-coarse 1 -o 360"
+    NSWEEPS_COARSE_1="./build/libpfasst_swe_sphere_mlsdc_*_debug -M 64 -t 360 --benchmark-name=gaussian_bump --dt=180 --libpfasst-nlevels 2 --libpfasst-niters 1 --libpfasst-nnodes 3 --output-file-mode=bin --libpfasst-nsweeps 1 -o 360"
     echo "$NSWEEPS_COARSE_1"
 	$NSWEEPS_COARSE_1 || exit
 
-    NSWEEPS_COARSE_2="./build/libpfasst_swe_sphere_mlsdc_*_debug -M 64 -t 360 --benchmark-name=gaussian_bump --dt=180 --libpfasst-nlevels 2 --libpfasst-niters 1 --libpfasst-nnodes 3 --output-file-mode=bin --libpfasst-nsweeps-coarse 2 -o 360"
+    NSWEEPS_COARSE_2="./build/libpfasst_swe_sphere_mlsdc_*_debug -M 64 -t 360 --benchmark-name=gaussian_bump --dt=180 --libpfasst-nlevels 2 --libpfasst-niters 1 --libpfasst-nnodes 3 --output-file-mode=bin --libpfasst-nsweeps 2,1 -o 360"
     echo "$NSWEEPS_COARSE_2"
 	$NSWEEPS_COARSE_2 || exit
 fi
